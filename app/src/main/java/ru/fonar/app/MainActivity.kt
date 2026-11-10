@@ -5,13 +5,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -24,7 +25,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
     private lateinit var status: TextView
-    private lateinit var toggleButton: Button
+    private lateinit var toggleButton: ImageButton
     private val permissionRequest = 42
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,12 +69,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }, LinearLayout.LayoutParams(-1, -2))
         layout.addView(View(this), LinearLayout.LayoutParams(1, dp(18)))
 
-        toggleButton = Button(this).apply {
-            text = "⏻"
-            textSize = 42f
-            setTextColor(bg)
-            setBackgroundColor(yellow)
-            isAllCaps = false
+        toggleButton = ImageButton(this).apply {
+            setImageResource(R.drawable.ic_power)
+            imageTintList = android.content.res.ColorStateList.valueOf(Color.WHITE)
+            scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
+            setPadding(dp(38), dp(38), dp(38), dp(38))
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(yellow)
+            }
+            contentDescription = "Включить или выключить фонарик"
             setOnClickListener { toggleTorch() }
         }
         val buttonParams = LinearLayout.LayoutParams(dp(150), dp(150))
@@ -102,7 +107,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             cameraManager.setTorchMode(id, next)
             torchOn = next
             status.text = if (torchOn) "Фонарик включён" else "Фонарик выключен"
-            toggleButton.text = if (torchOn) "●" else "⏻"
             if (torchOn) speakPhrase()
         } catch (_: Exception) {
             torchOn = false
